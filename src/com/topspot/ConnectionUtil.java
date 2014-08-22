@@ -7,8 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.google.appengine.api.utils.SystemProperty;
 import com.topspot.common.Constants;
-
+import java.util.logging.Logger;
 /**
  * Defined database connections and common methods to use through out
  * application.
@@ -18,13 +19,13 @@ import com.topspot.common.Constants;
  */
 public class ConnectionUtil {
 	private static ConnectionUtil instance = new ConnectionUtil();
+	private static final Logger log = Logger.getLogger(ConnectionUtil.class.getName());
 	private Constants objConstants = new Constants();
 	
 	 //private constructor
     private ConnectionUtil() {
         try {
-        	System.out.println("DBDriver - "+objConstants.getValue("DBDriver"));
-            Class.forName(objConstants.getValue("DBDriver"));
+        	Class.forName(objConstants.getValue("DBDriver"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -34,10 +35,12 @@ public class ConnectionUtil {
         Connection connection = null;
         String URL = null;
         try {
-        	URL = objConstants.getValue("DBUrl") + objConstants.getValue("DBName") + "?user="
-					+ objConstants.getValue("DBUserName") + "&password=" + objConstants.getValue("DBPassword");
+        	URL = objConstants.getValue("DBUrl") + objConstants.getValue("DBName") + "?user=" + objConstants.getValue("DBUserName");
+        	//URL = objConstants.getValue("DBUrl") + objConstants.getValue("DBName") + "?user=" + objConstants.getValue("DBUserName")+ "&password=" + objConstants.getValue("DBPassword");
+        	log.info("DB URL: " + URL);
             connection = DriverManager.getConnection(URL);
         } catch (SQLException e) {
+        	log.severe(e.toString());
             System.out.println("ERROR: Unable to Connect to Database.");
         }
         return connection;
